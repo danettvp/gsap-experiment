@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Glitch Pen Trail</title>
+  <style>
+    html, body {
+      margin: 0;
+      height: 100%;
+      background: #0d0d0d;
+      overflow: hidden;
+      cursor: crosshair;
+    }
+    canvas {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="trail"></canvas>
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script>
+    const canvas = document.getElementById("trail");
+    const ctx = canvas.getContext("2d");
+    let w = canvas.width = window.innerWidth;
+    let h = canvas.height = window.innerHeight;
+
+    const trail = Array.from({ length: 12 }, () => ({ x: w/2, y: h/2 }));
+
+    let mouse = { x: w/2, y: h/2 };
+
+    window.addEventListener("resize", () => {
+      w = canvas.width = window.innerWidth;
+      h = canvas.height = window.innerHeight;
+    });
+
+    window.addEventListener("mousemove", e => {
+      mouse.x = e.clientX;
+      mouse.y = e.clientY;
+    });
+
+    function draw() {
+      ctx.fillStyle = "rgba(13, 13, 13, 0.15)";
+      ctx.fillRect(0, 0, w, h);
+
+      // update each point to follow the previous one
+      trail.forEach((p, i) => {
+        const target = i === 0 ? mouse : trail[i - 1];
+        gsap.to(p, {
+          x: target.x + (Math.random() - 0.5) * 10, // glitch jitter
+          y: target.y + (Math.random() - 0.5) * 10,
+          duration: 0.3,
+          ease: "power2.out"
+        });
+      });
+
+      // draw trail line
+      ctx.beginPath();
+      ctx.moveTo(trail[0].x, trail[0].y);
+      for (let i = 1; i < trail.length; i++) {
+        const p = trail[i];
+        ctx.lineTo(p.x, p.y);
+      }
+
+      ctx.strokeStyle = `hsl(${Math.random()*360}, 80%, 70%)`;
+      ctx.lineWidth = 2;
+      ctx.shadowBlur = 10;
+      ctx.shadowColor = "rgba(255,255,255,0.4)";
+      ctx.stroke();
+
+      requestAnimationFrame(draw);
+    }
+
+    draw();
+  </script>
+</body>
+</html>
