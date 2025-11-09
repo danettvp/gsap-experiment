@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Glitch Pen Trail</title>
+  <title>Glitch Cube Trail</title>
   <style>
     html, body {
       margin: 0;
@@ -27,7 +27,6 @@
     let h = canvas.height = window.innerHeight;
 
     const trail = Array.from({ length: 12 }, () => ({ x: w/2, y: h/2 }));
-
     let mouse = { x: w/2, y: h/2 };
 
     window.addEventListener("resize", () => {
@@ -41,6 +40,7 @@
     });
 
     function draw() {
+      // fade old cubes slightly
       ctx.fillStyle = "rgba(13, 13, 13, 0.15)";
       ctx.fillRect(0, 0, w, h);
 
@@ -48,26 +48,19 @@
       trail.forEach((p, i) => {
         const target = i === 0 ? mouse : trail[i - 1];
         gsap.to(p, {
-          x: target.x + (Math.random() - 0.5) * 10, // glitch jitter
+          x: target.x + (Math.random() - 0.5) * 10,
           y: target.y + (Math.random() - 0.5) * 10,
           duration: 0.3,
           ease: "power2.out"
         });
       });
 
-      // draw trail line
-      ctx.beginPath();
-      ctx.moveTo(trail[0].x, trail[0].y);
-      for (let i = 1; i < trail.length; i++) {
-        const p = trail[i];
-        ctx.lineTo(p.x, p.y);
-      }
-
-      ctx.strokeStyle = `hsl(${Math.random()*360}, 80%, 70%)`;
-      ctx.lineWidth = 2;
-      ctx.shadowBlur = 10;
-      ctx.shadowColor = "rgba(255,255,255,0.4)";
-      ctx.stroke();
+      // draw cubes
+      trail.forEach((p, i) => {
+        ctx.fillStyle = `hsl(${Math.random() * 360}, 80%, 70%)`;
+        const size = 8 + i; // trailing cubes get slightly bigger
+        ctx.fillRect(p.x - size/2, p.y - size/2, size, size);
+      });
 
       requestAnimationFrame(draw);
     }

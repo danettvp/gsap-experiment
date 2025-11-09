@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>SVG Trail</title>
+  <style>
+    html, body {
+      margin: 0;
+      height: 100%;
+      background: #0d0d0d;
+      overflow: hidden;
+      cursor: crosshair;
+    }
+    svg {
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script>
+    let mouse = { x: window.innerWidth/2, y: window.innerHeight/2 };
+
+    window.addEventListener("mousemove", e => {
+      mouse.x = e.clientX;
+      mouse.y = e.clientY;
+      dropSVG(mouse.x, mouse.y);
+    });
+
+    const svgs = [
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="6"/></svg>',
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="6" y="6" width="12" height="12"/></svg>',
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12,4 20,20 4,20"/></svg>'
+    ];
+
+    function dropSVG(x, y) {
+      const div = document.createElement("div");
+      div.innerHTML = svgs[Math.floor(Math.random()*svgs.length)];
+      const svg = div.firstChild;
+      svg.style.position = "absolute";
+      svg.style.left = x + "px";
+      svg.style.top = y + "px";
+      svg.style.color = `hsl(${Math.random()*360}, 80%, 70%)`;
+      svg.style.width = "20px";
+      svg.style.height = "20px";
+      document.body.appendChild(svg);
+
+      gsap.to(svg, {
+        duration: 1.5,
+        x: "+=" + ((Math.random()-0.5)*50),
+        y: "+=" + ((Math.random()-0.5)*50),
+        opacity: 0,
+        scale: 0,
+        ease: "power2.out",
+        onComplete: () => svg.remove()
+      });
+    }
+  </script>
+</body>
+</html>
