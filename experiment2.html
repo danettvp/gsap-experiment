@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>SVG Trail</title>
+  <title>Falling SVG Trail</title>
   <style>
     html, body {
       margin: 0;
@@ -13,9 +13,9 @@
     }
     svg {
       position: absolute;
-      width: 20px;
-      height: 20px;
       pointer-events: none;
+      width: 40px;  /* bigger size */
+      height: 40px;
     }
   </style>
 </head>
@@ -44,17 +44,17 @@
       svg.style.left = x + "px";
       svg.style.top = y + "px";
       svg.style.color = `hsl(${Math.random()*360}, 80%, 70%)`;
-      svg.style.width = "20px";
-      svg.style.height = "20px";
+      svg.style.width = "40px";
+      svg.style.height = "40px";
       document.body.appendChild(svg);
 
       gsap.to(svg, {
-        duration: 1.5,
-        x: "+=" + ((Math.random()-0.5)*50),
-        y: "+=" + ((Math.random()-0.5)*50),
+        duration: 2 + Math.random()*1,   // fall speed
+        y: window.innerHeight + 50,      // move to bottom
+        x: "+=" + ((Math.random()-0.5)*50), // slight horizontal drift
+        rotation: Math.random()*360,     // optional spin
         opacity: 0,
-        scale: 0,
-        ease: "power2.out",
+        ease: "power1.in",
         onComplete: () => svg.remove()
       });
     }
