@@ -2,60 +2,55 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Falling SVG Trail</title>
+  <title>Falling Asset Trail</title>
   <style>
     html, body {
       margin: 0;
       height: 100%;
-      background: #0d0d0d;
+      background: #0000;
       overflow: hidden;
-      cursor: crosshair;
     }
-    svg {
+    img {
       position: absolute;
       pointer-events: none;
-      width: 40px;  /* bigger size */
-      height: 40px;
+      width: 80px;
+      height: 80px;
+      user-select: none;
     }
   </style>
 </head>
 <body>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+
   <script>
-    let mouse = { x: window.innerWidth/2, y: window.innerHeight/2 };
+    const assets = ['assets/iconstamp1.svg'];
+
+    let lastDrop = 0;
+    const dropDelay = 100; // milliseconds between drops (100ms = 10fps)
 
     window.addEventListener("mousemove", e => {
-      mouse.x = e.clientX;
-      mouse.y = e.clientY;
-      dropSVG(mouse.x, mouse.y);
+      const now = Date.now();
+      if (now - lastDrop > dropDelay) {
+        dropAsset(e.clientX, e.clientY);
+        lastDrop = now;
+      }
     });
 
-    const svgs = [
-      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="6"/></svg>',
-      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="6" y="6" width="12" height="12"/></svg>',
-      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12,4 20,20 4,20"/></svg>'
-    ];
+    function dropAsset(x, y) {
+      const img = document.createElement("img");
+      img.src = assets[Math.floor(Math.random() * assets.length)];
+      img.style.left = x + "px";
+      img.style.top = y + "px";
+      document.body.appendChild(img);
 
-    function dropSVG(x, y) {
-      const div = document.createElement("div");
-      div.innerHTML = svgs[Math.floor(Math.random()*svgs.length)];
-      const svg = div.firstChild;
-      svg.style.position = "absolute";
-      svg.style.left = x + "px";
-      svg.style.top = y + "px";
-      svg.style.color = `hsl(${Math.random()*360}, 80%, 70%)`;
-      svg.style.width = "40px";
-      svg.style.height = "40px";
-      document.body.appendChild(svg);
-
-      gsap.to(svg, {
-        duration: 2 + Math.random()*1,   // fall speed
-        y: window.innerHeight + 50,      // move to bottom
-        x: "+=" + ((Math.random()-0.5)*50), // slight horizontal drift
-        rotation: Math.random()*360,     // optional spin
+      gsap.to(img, {
+        duration: 2 + Math.random() * 1.5,
+        y: window.innerHeight + 100,
+        x: "+=" + ((Math.random() - 0.5) * 100),
+        rotation: Math.random() * 360,
         opacity: 0,
-        ease: "power1.in",
-        onComplete: () => svg.remove()
+        ease: "power2.inOut",
+        onComplete: () => img.remove()
       });
     }
   </script>
